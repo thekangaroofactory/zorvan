@@ -1,6 +1,7 @@
 
 library(dplyr)
 library(ggplot2)
+library(kgraph)
 
 # -------------------------------------
 # [helper] functions 
@@ -45,15 +46,15 @@ getTaskName <- function(r, id = NULL){
 getTaskStatusPlot <- function(tasks){
   
   # prepare data
-  tasks <- tasks %>%
+  tasks <- tasks[tasks$status != "obsolete", ] %>%
     group_by(status) %>%
-    summarise(count = n())
+    summarise(count = n(), progress = mean(progress))
   
-  # rename to fit donut function requirements
-  names(tasks) <- c("category", "count")
+  # rename to fit function requirements
+  names(tasks) <- c("category", "nb", "progress")
   
   # make plot
-  donut(tasks, 1)
+  k_exploded_radar(data = tasks)
   
 }
 

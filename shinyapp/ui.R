@@ -27,29 +27,17 @@ rm(nm)
 # Header
 header <- dashboardHeader(title = "Zorvân")
 
+
 # Sidebar
 sidebar <- dashboardSidebar(
     sidebarMenu(
-        #menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"), selected = TRUE),
-        menuItem("Projects", tabName = "projects", icon = icon("project-diagram"), selected = TRUE),
-        menuItem("Sport", tabName = "sport", icon = icon("running"))
-    )
-)
+        menuItem("Projects", tabName = "projects", icon = icon("project-diagram"), selected = TRUE)))
+
 
 # Body
 body <- dashboardBody(
     
     tabItems(
-    
-        # -- DASHBOARD
-        tabItem(tabName = "dashboard",
-                
-                fluidRow(
-                    h2("Dashboard")
-                )
-                
-        ),
-        
         
         # -- PROJECTS
         tabItem(tabName = "projects",
@@ -160,54 +148,11 @@ body <- dashboardBody(
                 
                     
                 ) # tabBox
-        ), # tabItem
+        ) # tabItem
         
         
-        # -- SPORT
-        tabItem(tabName = "sport",
-                tabBox(
-                    title = h2("Sports"),
-                    id = "tabset1",
-                    width = 12,
-                    
-                    # -- Tab: Sport
-                    tabPanel("Mensurations",
-                             fluidRow(
-                                 column(width = 2,
-                                        weightNew_Input("weight")),
-                                 column(width = 10,
-                                        weightTable_UI("weight"))
-                                 )),
-                    
-                    # -- Tab: workouts
-                    tabPanel("Workouts",
-                             fluidRow(
-                                 column(width = 4,
-                                        sessionInput("workout")),
-                                 column(width = 8,
-                                        workoutUI("workout"))
-                                 )),
-                    
-                    # -- Tab: biking
-                    tabPanel("Biking",
-                             fluidRow(
-                                 bikingTargetUI("bike"),
-                                 bikingCurrentUI("bike"),
-                                 bikingProgressUI("bike")),
-                             fluidRow(
-                                 column(width = 12,
-                                        bikingPlotUI("bike"))),
-                             fluidRow(
-                                 column(width = 4,
-                                        bikingInput("bike")
-                                 ),
-                                 column(width = 8,
-                                        bikingTableUI("bike")
-                                 )))
-				)
-        )
-    )
-)
+    ) # tabItems
+) # dashboardBody
 
 
 # -- Put them together into a dashboard
