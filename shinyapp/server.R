@@ -82,13 +82,6 @@ shinyServer(
       taskManager_Server(id = "task", r = r, path = path)
       timesheetManager_Server(id = "time", r = r, path = path)
       
-      # -------------------------------------
-      # Body and Sports
-      # -------------------------------------
-      
-      weight_Server(id = "weight", r = r, path = path)
-      workoutServer(id = "workout", r = r, path = path)
-      bikingServer(id = "bike", r = r, path = path)
       
       cat("-------------------------------------------------- \n")
       cat("Application server ready \n")
