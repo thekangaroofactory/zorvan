@@ -41,7 +41,7 @@ projectSelector_Input <- function(id)
   
   # UI
   uiOutput(ns("project_selector"))
-
+  
 }
 
 
@@ -68,15 +68,15 @@ projectActions_BTN <- function(id)
 
 projectManager_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
-
+    
     # get namespace
     ns <- session$ns
     
     # -- declare
     filename <- "projects.csv"
     cols <- c(id = "double",
-             name = "character",
-             category = "character")
+              name = "character",
+              category = "character")
     
     # -- Init selected item
     r$active_project <- reactiveVal(NULL)
@@ -87,8 +87,10 @@ projectManager_Server <- function(id, r, path) {
     # -------------------------------------
     
     # -- load data
-    r$projects <- reactiveVal(read.data(path$data, filename, cols))
-    
+    # r$projects <- reactiveVal(read.data(path$data, filename, cols)) << migrate to kfiles
+    r$projects <- reactiveVal(kfiles::read_data(file = filename,
+                                                path = path$data,
+                                                colClasses = cols))
     
     # -------------------------------------
     # [TABLE]
@@ -134,7 +136,7 @@ projectManager_Server <- function(id, r, path) {
                      selected = NULL,
                      multiple = FALSE,
                      width = '200px'))
-
+    
     
     # -- Observe:
     observeEvent(input$select_project, {
@@ -205,7 +207,7 @@ projectManager_Server <- function(id, r, path) {
       
       # notify
       showNotification("Project created.", type = "message")
-
+      
     })
     
     # -- Observe: delete
@@ -232,13 +234,13 @@ projectManager_Server <- function(id, r, path) {
           footer = tagList(
             modalButton("Cancel"),
             actionButton(ns("project_delete"), "Confirm delete"))))}
-        
+      
     })
     
     
     # -- Observe: Confirm Delete
     observeEvent(input$project_delete, {
-    
+      
       # close window
       removeModal()
       
@@ -252,12 +254,15 @@ projectManager_Server <- function(id, r, path) {
       r$projects(project_list)
       
       # save
-      write.data(r$projects(), path$data, filename)
+      # write.data(r$projects(), path$data, filename) << migrate to kfiles
+      kfiles::write_data(data = r$projects(), 
+                         file = filename, 
+                         path = path$data)
       
       # notify
       showNotification("Project deleted", type = "message")})
     
-
+    
   })
 }
 

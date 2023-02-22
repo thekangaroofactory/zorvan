@@ -23,7 +23,7 @@ taskGroupsTable_UI <- function(id)
   
   # UI
   DTOutput(ns("taskGroupTable"), width = 600)
-
+  
 }
 
 
@@ -67,7 +67,7 @@ taskGroup_BTN <- function(id)
 
 taskGroupManager_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
-
+    
     # get namespace
     ns <- session$ns
     
@@ -94,8 +94,10 @@ taskGroupManager_Server <- function(id, r, path) {
     # -------------------------------------
     
     # -- load data
-    r$taskGroups <- reactiveVal(read.data(path$data, filename, cols))
-    
+    # r$taskGroups <- reactiveVal(read.data(path$data, filename, cols)) << migrate to kfiles
+    r$taskGroups <- reactiveVal(kfiles::read_data(file = filename,
+                                                  path = path$data,
+                                                  colClasses = cols))
     
     # -- store & save
     storeAndSave <- function(new_item_list){
@@ -104,18 +106,21 @@ taskGroupManager_Server <- function(id, r, path) {
       r$taskGroups(new_item_list)
       
       # save
-      write.data(r$taskGroups(), path$data, filename)
+      # write.data(r$taskGroups(), path$data, filename) << migrate to kfiles
+      kfiles::write_data(data = r$taskGroups(), 
+                         file = filename, 
+                         path = path$data)
       
       # log & notify
       cat("[TASKGROUP] Item list saved \n")
       showNotification("TaskGroup saved.", type = "message")
       
     }
-
+    
     
     # -- project view
     project_taskgroups <- reactive({
-
+      
       # check
       if(!is.null(r$active_project())){
         
@@ -142,8 +147,8 @@ taskGroupManager_Server <- function(id, r, path) {
       } else {project_taskgroups()}
       
     })
-      
-
+    
+    
     # -------------------------------------
     # [TABLE]
     # -------------------------------------
@@ -157,7 +162,7 @@ taskGroupManager_Server <- function(id, r, path) {
     
     # -- In table item selection
     observeEvent(input$taskGroupTable_rows_selected, ignoreNULL = FALSE, {
-
+      
       # check input
       if(!is.null(input$taskGroupTable_rows_selected) & length(input$taskGroupTable_rows_selected) != 0){
         
@@ -217,14 +222,14 @@ taskGroupManager_Server <- function(id, r, path) {
     
     # -- Define: action buttons
     output$action_buttons <- renderUI(tagList(
-
-          # Button: always ON
-          actionButton(ns("btn_new"), "Create"),
-          
-          # Button: when task group selected 
-          if(!is.null(selectedTaskGroup())){
-            
-            actionButton(ns("btn_delete"), "Delete")}))
+      
+      # Button: always ON
+      actionButton(ns("btn_new"), "Create"),
+      
+      # Button: when task group selected 
+      if(!is.null(selectedTaskGroup())){
+        
+        actionButton(ns("btn_delete"), "Delete")}))
     
     
     # -- Observe: new
@@ -246,10 +251,10 @@ taskGroupManager_Server <- function(id, r, path) {
     
     # -- Observe: confirm new
     observeEvent(input$taskgroup_create, {
-
+      
       # required
       req(input$taskgroup_name)
-
+      
       # close form
       removeModal()
       
@@ -272,7 +277,7 @@ taskGroupManager_Server <- function(id, r, path) {
       }else{
         showNotification("Error: select a project before submit!", type = "error")
       }
-    
+      
     })
     
     

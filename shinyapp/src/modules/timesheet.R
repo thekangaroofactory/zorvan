@@ -20,7 +20,7 @@ timesheetTable_project_UI <- function(id)
   
   # UI
   DTOutput(ns("timesheetTable_project"))
-
+  
 }
 
 
@@ -48,13 +48,13 @@ timeSheet_filters_UI <- function(id)
 # -- UI:
 timeSheet_buttons_UI <- function(id)
 {
-
+  
   # namespace
   ns <- NS(id)
-
+  
   # UI
   uiOutput(ns("action_buttons"))
-
+  
 }
 
 
@@ -145,7 +145,10 @@ timesheetManager_Server <- function(id, r, path) {
     # --------------------------------------------------------------------------
     
     # -- load data
-    r$timesheet <- reactiveVal(read.data(path$data, filename, cols))
+    #r$timesheet <- reactiveVal(read.data(path$data, filename, cols)) << migrate to kfiles
+    r$timesheet <- reactiveVal(kfiles::read_data(file = filename,
+                                                 path = path$data,
+                                                 colClasses = cols))
     
     
     # -- update and save data
@@ -159,8 +162,11 @@ timesheetManager_Server <- function(id, r, path) {
       r$timesheet(timesheet)
       
       # save
-      write.data(timesheet, path$data, filename)
-
+      #write.data(timesheet, path$data, filename) << migrate to kfiles
+      kfiles::write_data(data = timesheet, 
+                         file = filename, 
+                         path = path$data)
+      
       # log & notify
       cat("[TIME] Item list saved \n")
       showNotification("Timesheet saved", type = "message")
@@ -239,13 +245,13 @@ timesheetManager_Server <- function(id, r, path) {
     # -------------------------------------
     # [FILTERS]
     # -------------------------------------
-
+    
     
     
     # -------------------------------------
     # [TABLE]
     # -------------------------------------
-
+    
     # -- UI: Table
     output$timesheetTable_project <- renderDT(getTableView(filtered_timesheet()),
                                               rownames = FALSE,
@@ -269,9 +275,9 @@ timesheetManager_Server <- function(id, r, path) {
       
       # cache id
       selectedTime(id)
-
+      
     })
-
+    
     
     # -------------------------------------
     # [MODAL]
@@ -316,7 +322,7 @@ timesheetManager_Server <- function(id, r, path) {
         btn_label <- "Create"
         
       }
-        
+      
       # -- build dialog
       modalDialog(
         
@@ -359,7 +365,7 @@ timesheetManager_Server <- function(id, r, path) {
       
     }
     
-  
+    
     # -- Observe: track taskGroup change in modal
     observeEvent(input$taskGroup, {
       
@@ -377,58 +383,58 @@ timesheetManager_Server <- function(id, r, path) {
     })
     
     
- 
+    
     # -------------------------------------
     # [ACTION BUTTONS]
     # -------------------------------------
-
+    
     # -- define action buttons
     output$action_buttons <- renderUI(tagList(
-
+      
       # Button: always ON
       actionButton(ns("btn_new"), "New"),
-
+      
       # Button: when row selected
       if(!is.null(selectedTime())){
-
+        
         tagList(
-
+          
           # Button: delete
           actionButton(ns("btn_delete"), "Delete"),
           
           # Button: update
           actionButton(ns("btn_update"), "Update"),
-
+          
           # Button: -
           actionButton(ns("btn_timeRemove"), "Time -"),
-
+          
           # Button: +
           actionButton(ns("btn_timeAdd"), "Time +")
           
-          )}))
-
+        )}))
+    
     
     # -- Observe: new
     observeEvent(input$btn_new, {
-
+      
       # display form
       showModal(getItemModal())
-
+      
     })
     
     
     # -- Observe: confirm new (modal)
     observeEvent(input$btn_confirm_new, {
-
+      
       # required
       req(input$date,
           input$taskGroup,
           input$task,
           input$time)
-
+      
       # close form
       removeModal()
-
+      
       # log
       cat("[TIME] Create new item \n")
       
@@ -450,7 +456,7 @@ timesheetManager_Server <- function(id, r, path) {
       # merge & update
       timesheet <- rbind(r$timesheet(), new_item)
       updateAndSave(timesheet)
-    
+      
     })
     
     
@@ -480,7 +486,7 @@ timesheetManager_Server <- function(id, r, path) {
       
       # get item
       target_item <- r$timesheet()[r$timesheet()$id == selectedTime(), ]
-
+      
       # transform input
       taskgroup_id <- getTaskGroupID(r, name = input$taskGroup, project = target_item$project.id)
       task_id <- getTaskID(r, project = target_item$project.id, taskgroup = taskgroup_id, name = input$task)
@@ -527,7 +533,7 @@ timesheetManager_Server <- function(id, r, path) {
       
       # log
       cat("[TIME] Delete confirmed, id =", selectedTime(), "\n")
-
+      
       # close modal
       removeModal()
       
@@ -536,7 +542,7 @@ timesheetManager_Server <- function(id, r, path) {
       
       # store & save
       updateAndSave(timesheet)
-
+      
     })
     
     
@@ -568,34 +574,34 @@ timesheetManager_Server <- function(id, r, path) {
         showNotification("[TIME] Can't remove time (do delete instead).", type = "warning")}
       
     })
+    
+    
+    # -- Button: time remove
+    observeEvent(input$btn_timeAdd, {
       
+      # log
+      cat("[TIME] Add time, id =", selectedTime(), "\n")
       
-      # -- Button: time remove
-      observeEvent(input$btn_timeAdd, {
-        
-        # log
-        cat("[TIME] Add time, id =", selectedTime(), "\n")
-        
-        # get item
-        target_item <- r$timesheet()[r$timesheet()$id == selectedTime(), ]
-        
-        # update object
-        target_item$time <- target_item$time + 0.5
-        
-        # get list and replace item
-        timesheet <- r$timesheet()
-        timesheet[timesheet$id == selectedTime(), ] <- target_item
-        
-        # store & save
-        updateAndSave(timesheet)
+      # get item
+      target_item <- r$timesheet()[r$timesheet()$id == selectedTime(), ]
+      
+      # update object
+      target_item$time <- target_item$time + 0.5
+      
+      # get list and replace item
+      timesheet <- r$timesheet()
+      timesheet[timesheet$id == selectedTime(), ] <- target_item
+      
+      # store & save
+      updateAndSave(timesheet)
       
     })
     
-
+    
     # -------------------------------------
     # [KPI] Section
     # -------------------------------------
-
+    
     # -- Box: effort
     output$kpi_effort <- renderUI(expr = {
       

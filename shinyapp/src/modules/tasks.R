@@ -23,7 +23,7 @@ taskTable_UI <- function(id)
   
   # UI
   DTOutput(ns("taskTable"))
-
+  
 }
 
 
@@ -133,13 +133,13 @@ kpiTaskHistory_PLOT <- function(id)
 # -- Task buttons
 taskButtons_UI <- function(id)
 {
-
+  
   # namespace
   ns <- NS(id)
-
+  
   # UI
   uiOutput(ns("action_buttons"))
-
+  
 }
 
 
@@ -210,10 +210,12 @@ taskManager_Server <- function(id, r, path) {
     # -------------------------------------
     # [DATA & VIEWS]
     # -------------------------------------
-
-    # -- load data
-    r$tasks <- reactiveVal(read.data(path$data, filename, cols))
     
+    # -- load data
+    # r$tasks <- reactiveVal(read.data(path$data, filename, cols)) << migrate to kfiles
+    r$tasks <- reactiveVal(kfiles::read_data(file = filename,
+                                             path = path$data,
+                                             colClasses = cols))
     
     # -- store & save
     storeAndSave <- function(new_item_list){
@@ -222,7 +224,10 @@ taskManager_Server <- function(id, r, path) {
       r$tasks(new_item_list)
       
       # save
-      write.data(r$tasks(), path$data, filename)
+      # write.data(r$tasks(), path$data, filename) << migrate to kfiles
+      kfiles::write_data(data = r$tasks(), 
+                         file = filename, 
+                         path = path$data)
       
       # log & notify
       cat("[TASK] Item list saved \n")
@@ -288,7 +293,7 @@ taskManager_Server <- function(id, r, path) {
     # -------------------------------------
     # [ITEM TABLE]
     # -------------------------------------
-
+    
     # -- UI: Table
     output$taskTable <- renderDT(filtered_tasks()[-c(1, 7, 8)],
                                  rownames = FALSE,
@@ -468,7 +473,7 @@ taskManager_Server <- function(id, r, path) {
       }
       
     })
-
+    
     
     # -- Button: Delete
     observeEvent(input$btn_delete, {
