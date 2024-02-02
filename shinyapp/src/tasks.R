@@ -6,10 +6,6 @@
 # -- Library
 
 
-# -- Source
-source ("~/Work/R/Library/Time and date/getTimestamp.R")
-
-
 # -------------------------------------
 # [TABLE]
 # -------------------------------------
@@ -445,7 +441,7 @@ taskManager_Server <- function(id, r, path) {
       if(!is.null(r$filter_TaskGroup())){
         
         # new project
-        new_item <- data.frame(id = getTimestamp(),
+        new_item <- data.frame(id = ktools::getTimestamp(),
                                name = input$task_name,
                                date.create = as.POSIXct(Sys.time()),
                                date.planned = NA,

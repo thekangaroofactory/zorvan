@@ -439,7 +439,7 @@ timesheetManager_Server <- function(id, r, path) {
       cat("[TIME] Create new item \n")
       
       # get ids
-      id <- getTimestamp()
+      id <- ktools::getTimestamp()
       project_id <- r$active_project()
       taskgroup_id <- getTaskGroupID(r, name = input$taskGroup, project = project_id)
       task_id <- getTaskID(r, project = project_id, taskgroup = taskgroup_id, name = input$task)

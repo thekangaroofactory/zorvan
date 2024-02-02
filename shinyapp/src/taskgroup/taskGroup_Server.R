@@ -1,64 +1,6 @@
 
-# --------------------------------------------------------------------------------
-# Shiny module: taskGroups
-# --------------------------------------------------------------------------------
 
 # -- Library
-
-
-# -- Source
-source ("~/Work/R/Library/Time and date/getTimestamp.R")
-
-
-# -------------------------------------
-# [TABLE]
-# -------------------------------------
-
-# -- UI
-taskGroupsTable_UI <- function(id)
-{
-  
-  # namespace
-  ns <- NS(id)
-  
-  # UI
-  DTOutput(ns("taskGroupTable"), width = 600)
-  
-}
-
-
-# -------------------------------------
-# [FILTER]
-# -------------------------------------
-
-# -- Input
-taskgroupFilter_Input <- function(id)
-{
-  
-  # namespace
-  ns <- NS(id)
-  
-  # UI
-  uiOutput(ns("taskgroup_filter"))
-  
-}
-
-
-# -------------------------------------
-# [ACTION BUTTONS]
-# -------------------------------------
-
-# -- Buttons
-taskGroup_BTN <- function(id)
-{
-  
-  # namespace
-  ns <- NS(id)
-  
-  # UI
-  uiOutput(ns("action_buttons"))
-  
-}
 
 
 # ------------------------------------------------------------------------------
@@ -154,8 +96,8 @@ taskGroupManager_Server <- function(id, r, path) {
     # -------------------------------------
     
     # -- Item table
-    output$taskGroupTable <- renderDT(filtered_taskgroups()[-c(1, 3)],
-                                      options = list(lengthMenu = c(5, 10, 15), pageLength = 5, dom = "ltp"),
+    output$taskGroupTable <- renderDT(taskgroup_view(filtered_taskgroups()),
+                                      options = list(lengthMenu = c(5, 10, 15), pageLength = 5, dom = "ltp", scrollX = TRUE),
                                       rownames = FALSE,
                                       selection = 'single')
     
@@ -262,7 +204,7 @@ taskGroupManager_Server <- function(id, r, path) {
       if(!is.null(r$active_project())){
         
         # new project
-        new_item <- data.frame(id = getTimestamp(),
+        new_item <- data.frame(id = ktools::getTimestamp(),
                                name = input$taskgroup_name,
                                project.id = r$active_project(),
                                before = "xxx",

@@ -1,65 +1,6 @@
 
-# --------------------------------------------------------------------------------
-# Shiny module: projects
-# --------------------------------------------------------------------------------
 
 # -- Library
-
-
-# -- Source
-source ("~/Work/R/Library/Time and date/getTimestamp.R")
-
-
-# -------------------------------------
-# [TABLE]
-# -------------------------------------
-
-# -- Project table UI
-# projectTable_UI <- function(id)
-# {
-# 
-#   # namespace
-#   ns <- NS(id)
-# 
-#   # table
-#   DTOutput(ns("projectTable"),
-#            width = 600)
-# 
-# }
-
-
-# -------------------------------------
-# [SET ACTIVE PROJECT]
-# -------------------------------------
-
-# -- Select Project
-projectSelector_Input <- function(id)
-{
-  
-  # namespace
-  ns <- NS(id)
-  
-  # UI
-  uiOutput(ns("project_selector"))
-  
-}
-
-
-# -------------------------------------
-# [ACTION BUTTONS]
-# -------------------------------------
-
-# -- Action buttons
-projectActions_BTN <- function(id)
-{
-  
-  # namespace
-  ns <- NS(id)
-  
-  # UI
-  uiOutput(ns("action_buttons"))
-  
-}
 
 
 # ------------------------------------------------------------------------------
@@ -105,21 +46,7 @@ projectManager_Server <- function(id, r, path) {
     #                                 rownames = FALSE,
     #                                 selection = 'single')
     
-    
-    # -- In table item selection
-    # observeEvent(input$projectTable_rows_selected, ignoreNULL = FALSE, {
-    # 
-    #   # get id and name
-    #   id <- r$projects()[input$projectTable_rows_selected, ]$id
-    #   name <- r$projects()[input$projectTable_rows_selected, ]$name
-    # 
-    #   #trace
-    #   cat("Selected project: id =", as.character(id), "name =", name, "\n")
-    # 
-    #   #cache id
-    #   r$xxxxx(id) << changer !!!
-    # 
-    # })
+
     
     
     # -------------------------------------
@@ -131,7 +58,7 @@ projectManager_Server <- function(id, r, path) {
       
       # Selector
       selectizeInput(ns("select_project"),
-                     label = "Select active project",
+                     label = "Project",
                      choices = r$projects()$name,
                      selected = NULL,
                      multiple = FALSE,
@@ -195,7 +122,7 @@ projectManager_Server <- function(id, r, path) {
       removeModal()
       
       # new project
-      new_item <- data.frame(id = getTimestamp(),
+      new_item <- data.frame(id = ktools::getTimestamp(),
                              name = input$project_name,
                              category = input$project_category)
       
@@ -203,7 +130,10 @@ projectManager_Server <- function(id, r, path) {
       r$projects(rbind(r$projects(), new_item))
       
       # save
-      write.data(r$projects(), path$data, filename)
+      #write.data(r$projects(), path$data, filename)
+      kfiles::write_data(data = r$projects(), 
+                         file = filename, 
+                         path = path$data)
       
       # notify
       showNotification("Project created.", type = "message")

@@ -7,6 +7,7 @@
 
 library(shiny)
 library(DT)
+library(kgraph)
 
 
 # -- Init env
@@ -26,10 +27,6 @@ for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.
   source(nm)
 }
 rm(nm)
-
-
-# -- dependencies
-source("~/Work/R/Library/Time and date/getTimestamp.R")
 
 
 # -- Define server logic
