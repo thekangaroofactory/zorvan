@@ -16,7 +16,7 @@ library(kgraph)
 # ------------------------------------------------------------------------------
 
 # -- Declare path
-path <- list(code = "../shinyapp/src",
+path <- list(code = "./R",
              data = "../data")
 
 
