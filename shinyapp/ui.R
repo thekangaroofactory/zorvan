@@ -1,34 +1,14 @@
 
-# --------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # This is the user-interface definition of the Shiny web application
-# --------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-# -- Library
-
-library(shiny)
-library(shinydashboard)
-library(DT)
-
-
-# -- load Modules & Scripts
-cat("[UI] Source code... \n")
-
-code_path <- "../shinyapp/src"
-for (nm in list.files(code_path, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
-{
-  cat("Loading from: ", nm, "\n")
-  source(nm)
-}
-rm(nm)
-
-
-# -- Define UI
-
-# Header
+# -- header
 header <- dashboardHeader(title = "Zorvân")
 
 
-# Sidebar
+# -- Sidebar
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Dashboard", tabName = "dashboard", icon = icon("project-diagram")),
@@ -36,24 +16,21 @@ sidebar <- dashboardSidebar(
     menuItem("Projects", tabName = "project", icon = icon("project-diagram"), selected = TRUE)))
 
 
-# Body
+# -- Body
 body <- dashboardBody(
   
   tabItems(
     
     # -- DASHBOARD
     tabItem(tabName = "dashboard",
-            
             h4("Global follow-up, effort")),
     
-    # -- DASHBOARD
+    # -- ROADMAP
     tabItem(tabName = "roadmap",
-            
             h4("Global roadmap idk")),
     
     # -- PROJECTS
     tabItem(tabName = "project",
-            
             wellPanel(fluidRow(
               
               column(width = 8,
@@ -162,10 +139,8 @@ body <- dashboardBody(
 
 
 # -- Put them together into a dashboard
-
 dashboardPage(
   header,
   sidebar,
-  body
-)
+  body)
 
